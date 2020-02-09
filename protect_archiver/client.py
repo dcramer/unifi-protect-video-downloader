@@ -54,8 +54,6 @@ class ProtectClient(object):
         touch_files: bool = False,
         # aka read_timeout - time to wait until a socket read response happens
         download_timeout: int = 60,
-        max_downloads_with_key: int = 3,
-        max_downloads_with_auth: int = 10,
     ):
         self.address = address
         self.port = port
@@ -77,13 +75,8 @@ class ProtectClient(object):
         self.files_skipped = 0
         self.max_retries = 3
 
-        self.max_downloads_with_auth = max_downloads_with_auth
-        self.max_downloads_with_key = max_downloads_with_key
-
         self._access_key = None
         self._api_token = None
-        self._downloads_with_current_token = 0
-        self._downloads_with_current_access_key = 0
 
     # API Authentication
     # get bearer token using username and password of local user
@@ -128,36 +121,21 @@ class ProtectClient(object):
     def get_api_token(self, force: bool = False) -> str:
         if force:
             self._api_token = None
-        # use the same api token (login session) for set number of downloads only (default: 10)
-        # elif self._downloads_with_current_token == int(self.max_downloads_with_auth):
-        #     logging.info(
-        #         f"API Token has been used for {self._downloads_with_current_token} download(s) - requesting new session token..."
-        #     )
-        #     self._api_token = None
 
         if self._api_token is None:
             # get new API auth bearer token and access key
             self._api_token = self.fetch_api_token()
             self._access_key = self.fetch_access_key(self._api_token)
-            self._downloads_with_current_token = 0
-            self._downloads_with_current_access_key = 0
 
         return self._api_token
 
     def get_access_key(self, api_token: str = None, force: bool = False) -> str:
         if force:
             self._api_token = None
-        # use the same access key for set number of downloads only (default: 3)
-        # elif self._downloads_with_current_access_key == self.max_downloads_with_key:
-        #     logging.info(
-        #         f"Access Key has been used for {self._downloads_with_current_access_key} download(s) - requesting new access key..."
-        #     )
-        #     self._access_key = None
 
         if self._access_key is None:
             # request new access key
             self._access_key = self.fetch_access_key(api_token or self.get_api_token())
-            self._downloads_with_current_access_key = 0
 
         return self._access_key
 
@@ -174,8 +152,6 @@ class ProtectClient(object):
                     timeout=self.download_timeout,
                     stream=True,
                 )
-                self._downloads_with_current_token += 1
-                self._downloads_with_current_access_key += 1
 
                 if response.status_code == 401:
                     # invalid current api token - we special case this
@@ -189,8 +165,6 @@ class ProtectClient(object):
                         timeout=self.download_timeout,
                         stream=True,
                     )
-                    self._downloads_with_current_token += 1
-                    self._downloads_with_current_access_key += 1
 
                 # write file to disk if response.status_code is 200,
                 # otherwise log error and then either exit or skip the download
