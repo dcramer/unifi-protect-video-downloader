@@ -21,4 +21,4 @@ jobs:
           PATH=$HOME/.poetry/bin:$PATH poetry run flake8
       - name: Test
         run: |
-          PATH=$HOME/.poetry/bin:$PATH poetry run py.test -v"
+          PATH=$HOME/.poetry/bin:$PATH poetry run py.test -v
