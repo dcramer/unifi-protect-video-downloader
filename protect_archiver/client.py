@@ -187,7 +187,7 @@ class ProtectClient(object):
                     self.get_api_token(force=True)
                     start = time.monotonic()
                     response = requests.get(
-                        uri,
+                        f'{uri}&accessKey={self.get_access_key()}',
                         verify=self.verify_ssl,
                         timeout=self.download_timeout,
                         stream=True,
@@ -384,7 +384,7 @@ class ProtectClient(object):
                 open(filename, "a").close()
 
             # build video export API address
-            address = f"https://{self.address}:{self.port}/api/video/export?accessKey={self.get_access_key()}&camera={camera.id}&start={js_timestamp_range_start}&end={js_timestamp_range_end}"
+            address = f"https://{self.address}:{self.port}/api/video/export?&camera={camera.id}&start={js_timestamp_range_start}&end={js_timestamp_range_end}"
 
             # download the file
             self.download_file(address, filename)
