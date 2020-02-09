@@ -129,11 +129,11 @@ class ProtectClient(object):
         if force:
             self._api_token = None
         # use the same api token (login session) for set number of downloads only (default: 10)
-        elif self._downloads_with_current_token == int(self.max_downloads_with_auth):
-            logging.info(
-                f"API Token has been used for {self._downloads_with_current_token} download(s) - requesting new session token..."
-            )
-            self._api_token = None
+        # elif self._downloads_with_current_token == int(self.max_downloads_with_auth):
+        #     logging.info(
+        #         f"API Token has been used for {self._downloads_with_current_token} download(s) - requesting new session token..."
+        #     )
+        #     self._api_token = None
 
         if self._api_token is None:
             # get new API auth bearer token and access key
@@ -148,11 +148,11 @@ class ProtectClient(object):
         if force:
             self._api_token = None
         # use the same access key for set number of downloads only (default: 3)
-        elif self._downloads_with_current_access_key == self.max_downloads_with_key:
-            logging.info(
-                f"Access Key has been used for {self._downloads_with_current_access_key} download(s) - requesting new access key..."
-            )
-            self._access_key = None
+        # elif self._downloads_with_current_access_key == self.max_downloads_with_key:
+        #     logging.info(
+        #         f"Access Key has been used for {self._downloads_with_current_access_key} download(s) - requesting new access key..."
+        #     )
+        #     self._access_key = None
 
         if self._access_key is None:
             # request new access key
