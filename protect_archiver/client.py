@@ -205,7 +205,7 @@ class ProtectClient(object):
 
                 elapsed = time.monotonic() - start
                 logging.info(
-                    f"Download successful after {int(elapsed)}s ({format_bytes(cur_bytes // elapsed)}ps)"
+                    f"Download successful after {int(elapsed)}s ({format_bytes(cur_bytes)}, {format_bytes(cur_bytes // elapsed)}ps)"
                 )
                 self.files_downloaded += 1
                 self.bytes_downloaded += cur_bytes
