@@ -187,7 +187,7 @@ class ProtectClient(object):
                     self.get_api_token(force=True)
                     start = time.monotonic()
                     response = requests.get(
-                        f'{uri}&accessKey={self.get_access_key()}',
+                        f"{uri}&accessKey={self.get_access_key()}",
                         verify=self.verify_ssl,
                         timeout=self.download_timeout,
                         stream=True,
