@@ -165,18 +165,17 @@ class ProtectClient(object):
     def download_file(self, uri: str, file_name: str):
         retry_delay = max(self.download_wait, 3)
         for retry_num in range(self.max_retries):
-            self._downloads_with_current_token += 1
-            self._downloads_with_current_access_key += 1
-
             # make the GET request to retrieve the video file or snapshot
             try:
                 start = time.monotonic()
                 response = requests.get(
-                    uri,
+                    f"{uri}&accessKey={self.get_access_key()}",
                     verify=self.verify_ssl,
                     timeout=self.download_timeout,
                     stream=True,
                 )
+                self._downloads_with_current_token += 1
+                self._downloads_with_current_access_key += 1
 
                 # write file to disk if response.status_code is 200,
                 # otherwise log error and then either exit or skip the download
@@ -192,6 +191,9 @@ class ProtectClient(object):
                         timeout=self.download_timeout,
                         stream=True,
                     )
+                    self._downloads_with_current_token += 1
+                    self._downloads_with_current_access_key += 1
+
                 if response.status_code != 200:
                     try:
                         data = json.loads(response.content)
