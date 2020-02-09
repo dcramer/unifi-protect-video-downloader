@@ -177,8 +177,6 @@ class ProtectClient(object):
                 self._downloads_with_current_token += 1
                 self._downloads_with_current_access_key += 1
 
-                # write file to disk if response.status_code is 200,
-                # otherwise log error and then either exit or skip the download
                 if response.status_code == 401:
                     # invalid current api token - we special case this
                     # as we dont want to retry on consecutive auth failures
@@ -194,6 +192,8 @@ class ProtectClient(object):
                     self._downloads_with_current_token += 1
                     self._downloads_with_current_access_key += 1
 
+                # write file to disk if response.status_code is 200,
+                # otherwise log error and then either exit or skip the download
                 if response.status_code != 200:
                     try:
                         data = json.loads(response.content)
