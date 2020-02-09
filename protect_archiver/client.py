@@ -192,8 +192,6 @@ class ProtectClient(object):
                         timeout=self.download_timeout,
                         stream=True,
                     )
-                    if response.status_code == 401:
-                        raise AuthorizationFailed
                 if response.status_code != 200:
                     try:
                         data = json.loads(response.content)
@@ -203,7 +201,11 @@ class ProtectClient(object):
                     error_message = (
                         data.get("error") or data or "(no information available)"
                     )
-                    raise DownloadFailed(
+                    if response.status_code == 401:
+                        cls = AuthorizationFailed
+                    else:
+                        cls = DownloadFailed
+                    raise cls(
                         f"Download failed with status {response.status_code} {response.reason}:\n{error_message}"
                     )
 
