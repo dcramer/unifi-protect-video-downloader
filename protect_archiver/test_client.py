@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @pytest.fixture(autouse=True)
@@ -49,7 +49,7 @@ def test_get_camera_list_with_disconnected(client):
 def test_download_footage(responses, client, sample_camera, test_output_dest):
     responses.add(
         responses.GET,
-        "https://unifi:7443/api/video/export?accessKey=access:key:example&camera=exteriorCameraId&start=1578553200000&end=1578556739000",
+        "https://unifi:7443/api/video/export?accessKey=access:key:example&camera=exteriorCameraId&start=1578524400000&end=1578527939000",
         body="abcdefg",
         headers={
             "Content-Type": "video/mp4",
@@ -58,13 +58,14 @@ def test_download_footage(responses, client, sample_camera, test_output_dest):
         },
     )
 
-    start = datetime(2020, 1, 8, 23, 0, 0)
-    end = datetime(2020, 1, 8, 23, 59, 0)
+    start = datetime(2020, 1, 8, 23, 0, 0, tzinfo=timezone.utc)
+    end = datetime(2020, 1, 8, 23, 59, 0, tzinfo=timezone.utc)
 
     client.download_footage(start, end, sample_camera)
 
     file_name = os.path.join(
-        test_output_dest, "Exterior_raId_2020-01-08--23-00-00_2020-01-08--23-58-59.mp4",
+        test_output_dest,
+        "Exterior_raId_2020-01-08--23-00-00+0000_2020-01-08--23-58-59+0000.mp4",
     )
 
     assert os.path.exists(file_name)
